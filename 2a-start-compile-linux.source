@@ -1,0 +1,45 @@
+# Linuxium's scripts to create a custom Ubuntu ISO
+
+# open chroot
+mount -t proc none /proc
+mount -t sysfs none /sys
+mount -t devpts none /dev/pts
+
+export HOME=/root
+export LC_ALL=C
+dbus-uuidgen > /var/lib/dbus/machine-id
+dpkg-divert --local --rename --add /sbin/initctl
+ln -s /bin/true /sbin/initctl
+
+apt-get update
+
+# get all dependencies
+apt-get build-dep -y linux-image-4.8.0-22-generic
+apt-get -y install git build-essential fakeroot libncurses5-dev libssl-dev ccache
+
+# add support for aufs
+cd usr/src
+git clone git://github.com/sfjro/aufs4-standalone.git aufs4-standalone.git
+cd aufs4-standalone.git/
+git checkout origin/aufs4.9
+
+# get kernel source
+cd /usr/src
+wget https://github.com/plbossart/sound/archive/experimental/codecs.zip
+unzip codecs.zip
+rm codecs.zip
+cd sound-experimental-codecs
+cp -a ../aufs4-standalone.git/{Documentation,fs} .
+cp ../aufs4-standalone.git/include/uapi/linux/aufs_type.h include/uapi/linux/
+patch -p1 < ../aufs4-standalone.git/aufs4-kbuild.patch 
+patch -p1 < ../aufs4-standalone.git/aufs4-base.patch 
+patch -p1 < ../aufs4-standalone.git/aufs4-mmap.patch 
+patch -p1 < ../aufs4-standalone.git/aufs4-standalone.patch 
+sed 's/CONFIG_CPU_FREQ_GOV_SCHEDUTIL=m/CONFIG_CPU_FREQ_GOV_SCHEDUTIL=y/' /boot/config-4.8.0-22-generic > .config
+scripts/kconfig/merge_config.sh .config /defconfig
+
+# build debs
+make -j `getconf _NPROCESSORS_ONLN` bindeb-pkg LOCALVERSION=-soundexperimentalcodecs
+
+cd ..
+
