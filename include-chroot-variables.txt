@@ -3,8 +3,11 @@
 CANONICAL_ISO="ubuntu-16.10-desktop-amd64.iso"
 PATH_TO="/tmp"
 
-LINUXIUM_KERNEL_RELEASE="4.9.0"
-LINUXIUM_KERNEL_VERSION="soundexperimentalcodecs"
+wget https://www.kernel.org/finger_banner -O ${PATH_TO}/finger_banner
+VERSION=$(cat ${PATH_TO}/finger_banner | sed -n '2p' | awk -F':' '{print $2}' | sed 's/ //g')
+
+LINUXIUM_KERNEL_RELEASE=${VERSION}
+LINUXIUM_KERNEL_VERSION="stable"
 
 LINUXIUM_ISO="ubuntu-16.10-${LINUXIUM_KERNEL_VERSION}.iso"
-LINUXIUM_VOLID="Ubuntu 16.10 Experimental Codecs"
+LINUXIUM_VOLID="Ubuntu 16.10 Custom Audio"

@@ -30,3 +30,6 @@ sudo cp 2a-start-compile-linux.source development-chroot
 sudo cp 2b-finish-compile-linux.source development-chroot
 sudo cp include-chroot-variables.txt development-chroot
 
+# copy additional kernel compilation commands to development chroot
+sudo cp *-kernel.sh development-chroot
+
