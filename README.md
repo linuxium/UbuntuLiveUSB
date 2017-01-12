@@ -44,5 +44,9 @@ The second script '**ubuntuliveusb.sh**' creates a bootable USB that can be used
 
 and uses the file `usb_partition/boot/grub/grub.cfg` to define the multiboot menu. ISOs can be added or removed by editing the script and menu configuration file. Installation of an ISO is currently only supported when the installation is performed while running the ISO and when the ISO was booted with a 64-bit bootloader. The script includes a five second grace period allowing it to be interrupted as care should be taken to ensure the correct USB device is passed as the parameter in order to prevent accidental data corruption of any other USB device currently being used.
 
+Additional configurations:
+New kernels can be added with providing a <newconfig>-kernel.sh file which contains instructions to retrieve code and compile kernel
+Additional userspace packages can be added to the target by editing the target-packages.sh files
+
 The scripts are provided as is in the hope that they are useful using the same Creative Commons license as the original Ubuntu wiki. The user is alerted to the fact that using experimental audio drivers and firmware may result in hardware damage for which there is no warranty or liability.
 

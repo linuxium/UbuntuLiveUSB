@@ -4,6 +4,9 @@
 
 source include-chroot-variables.txt
 
+# copy list of desired packages
+sudo cp target-packages.sh iso-chroot/
+
 # add in kernel debs
 sudo bash -c "cp development-chroot/usr/src/*.deb iso-chroot/usr/src/"
 
@@ -30,9 +33,7 @@ dpkg -i /usr/src/linux*.deb
 
 apt-get update && apt-get -y upgrade
 
-apt-get -y install emacs audacity
-apt-get -y install acpica-tools uuid-dev uuid-dev nasm
-apt-get -y install git git-email gitk sshpass openssh-server
+source /target-packages.sh
 
 apt-get clean
 apt-get autoclean
