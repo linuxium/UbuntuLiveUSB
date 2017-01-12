@@ -4,7 +4,7 @@
 
 source include-chroot-variables.txt
 
-[ ! -f ${PATH_TO}/ubuntu-16.10-desktop-amd64.iso ] && echo "Using ubuntu-16.10-desktop-amd64.iso from Downnloads." && cp ~/Downloads/ubuntu-16.10-desktop-amd64.iso ${PATH_TO}/
+[ ! -f ${PATH_TO}/ubuntu-16.10-desktop-amd64.iso ] && echo "Using ubuntu-16.10-desktop-amd64.iso from Downloads." && cp ~/Downloads/ubuntu-16.10-desktop-amd64.iso ${PATH_TO}/
 [ ! -f ${PATH_TO}/sources.list ] && echo "Using sources.list from git." && cp sources.list ${PATH_TO}/
 [ ! -f ${PATH_TO}/defconfig ] && echo "Using defconfig from git." && cp defconfig ${PATH_TO}/
 [ ! -f ${PATH_TO}/efi_img_bootia32.efi ] && echo "Using efi_img_bootia32.efi from git." && cp efi_img_bootia32.efi ${PATH_TO}/

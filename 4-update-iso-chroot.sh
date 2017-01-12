@@ -4,15 +4,14 @@
 
 source include-chroot-variables.txt
 
-# copy new kernel debs
-sudo cp development-chroot/usr/src/linux-headers-${LINUXIUM_KERNEL_RELEASE}-${LINUXIUM_KERNEL_VERSION}_${LINUXIUM_KERNEL_RELEASE}-${LINUXIUM_KERNEL_VERSION}-1_amd64.deb iso-chroot/usr/src/
-sudo cp development-chroot/usr/src/linux-image-${LINUXIUM_KERNEL_RELEASE}-${LINUXIUM_KERNEL_VERSION}_${LINUXIUM_KERNEL_RELEASE}-${LINUXIUM_KERNEL_VERSION}-1_amd64.deb iso-chroot/usr/src/
+# add in kernel debs
+sudo bash -c "cp development-chroot/usr/src/*.deb iso-chroot/usr/src/"
 
 # add in UCM files for sound
 sudo mkdir -p iso-chroot/usr/share/alsa/ucm
 sudo cp -rf ${PATH_TO}/UCM-master/* iso-chroot/usr/share/alsa/ucm
 
-# install new kernel debs and additional packages
+# install kernel debs and additional packages
 sudo mv iso-chroot/etc/apt/sources.list iso-chroot/etc/apt/sources.list.orig
 sudo cp ${PATH_TO}/sources.list iso-chroot/etc/apt/
 sudo cp /etc/resolv.conf iso-chroot/etc/

@@ -28,4 +28,5 @@ sudo cp ${PATH_TO}/defconfig development-chroot/
 # copy chroot scripts to development chroot
 sudo cp 2a-start-compile-linux.source development-chroot
 sudo cp 2b-finish-compile-linux.source development-chroot
+sudo cp include-chroot-variables.txt development-chroot
 

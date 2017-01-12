@@ -11,10 +11,18 @@ dbus-uuidgen > /var/lib/dbus/machine-id
 dpkg-divert --local --rename --add /sbin/initctl
 ln -s /bin/true /sbin/initctl
 
+source /include-chroot-variables.txt
+
 apt-get update
 
+# download chroot kernel
+CHROOT_KERNEL=`dpkg -l | awk '/^ii +linux-image-[0-9]/ {print $2}'`
+CHROOT_KERNEL_VERSION=${CHROOT_KERNEL#linux-image-}
+cd /usr/src
+apt-get download ${CHROOT_KERNEL}
+
 # get all dependencies
-apt-get build-dep -y linux-image-4.8.0-22-generic
+apt-get build-dep -y ${CHROOT_KERNEL}
 apt-get -y install git build-essential fakeroot libncurses5-dev libssl-dev ccache
 
 # add support for aufs
@@ -35,11 +43,11 @@ patch -p1 < ../aufs4-standalone.git/aufs4-kbuild.patch
 patch -p1 < ../aufs4-standalone.git/aufs4-base.patch 
 patch -p1 < ../aufs4-standalone.git/aufs4-mmap.patch 
 patch -p1 < ../aufs4-standalone.git/aufs4-standalone.patch 
-sed 's/CONFIG_CPU_FREQ_GOV_SCHEDUTIL=m/CONFIG_CPU_FREQ_GOV_SCHEDUTIL=y/' /boot/config-4.8.0-22-generic > .config
+sed 's/CONFIG_CPU_FREQ_GOV_SCHEDUTIL=m/CONFIG_CPU_FREQ_GOV_SCHEDUTIL=y/' /boot/config-${CHROOT_KERNEL_VERSION} > .config
 scripts/kconfig/merge_config.sh .config /defconfig
 
 # build debs
-make -j `getconf _NPROCESSORS_ONLN` bindeb-pkg LOCALVERSION=-soundexperimentalcodecs
+make -j `getconf _NPROCESSORS_ONLN` bindeb-pkg LOCALVERSION=-${LINUXIUM_KERNEL_VERSION}
 
 cd ..
 

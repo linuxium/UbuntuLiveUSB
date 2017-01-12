@@ -36,7 +36,7 @@ Two additional standalone scripts are provided to help with any extra developmen
 ./exit-development-chroot.sh <chroot environment>
 ```
 
-The second script '**ubuntuliveusb.sh**' creates a bootable USB that can be used as a multiboot LiveUSB to boot the custom Ubuntu ISO and/or alternative Ubuntu ISOs selected via a multiboot menu. It is run by entering:
+The second script '**ubuntuliveusb.sh**' creates a bootable USB that can be used as a multiboot LiveUSB to boot the custom Ubuntu ISO and/or alternative Ubuntu ISOs by specific kernels selected via a multiboot menu. It is run by entering:
 
 ```
 ./ubuntuliveusb.sh /dev/<usb device>
