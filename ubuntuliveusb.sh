@@ -4,6 +4,9 @@
 
 source include-chroot-variables.txt
 
+[ ! -f ${PATH_TO}/${CANONICAL_ISO} ] && echo "Using ${CANONICAL_ISO} from Downloads." && cp ~/Downloads/${CANONICAL_ISO} ${PATH_TO}/
+[ ! -f ${PATH_TO}/${LINUXIUM_ISO} ] && echo "Using ${LINUXIUM_ISO} from local directory." && cp ./${LINUXIUM_ISO} ${PATH_TO}/
+
 [ ! -f ${PATH_TO}/${CANONICAL_ISO} ] && echo "ISO file '${PATH_TO}/${CANONICAL_ISO}' not found ... exiting." && exit
 [ ! -f ${PATH_TO}/${LINUXIUM_ISO} ] && echo "ISO file '${PATH_TO}/${LINUXIUM_ISO}' not found ... exiting." && exit
 
@@ -85,9 +88,10 @@ do
 	if [ "${ISO}" = "grub" ]; then continue; fi
 	ISO_NAME=${ISO%.iso}
 	echo "Adding GRUB entries for ISO ${ISO_NAME} to USB ..."
-	for KERNEL_PATH in `ls -s --block-size=1 ${ISO_PATH}/vmlinuz* | sort -u -k1,1 | awk '{print $2}'`
+	for KERNEL_PATH in `ls -s --block-size=1 ${ISO_PATH}/vmlinuz* | sort -u | awk '{print $2}'`
 	do
 		KERNEL=${KERNEL_PATH#$ISO_PATH/}
+		echo "Adding entry ${KERNEL}..."
 		sudo bash -c "echo -n 'menuentry \"Try kernel ' >> mnt_usb/boot/grub/grub.cfg"
 		sudo bash -c "echo -n ${KERNEL} >> mnt_usb/boot/grub/grub.cfg"
 		sudo bash -c "echo -n ' from ' >> mnt_usb/boot/grub/grub.cfg"
