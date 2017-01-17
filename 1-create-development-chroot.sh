@@ -19,6 +19,7 @@ sudo umount mnt
 rmdir mnt
 
 # configure networking inside development chroot
+sudo rm development-chroot/etc/resolv.conf
 sudo cp /etc/resolv.conf development-chroot/etc/
 
 # configure sources and kernel config inside development chroot

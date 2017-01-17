@@ -4,6 +4,10 @@
 
 source include-chroot-variables.txt
 
+[ ! -f ${PATH_TO}/efi_img_bootia32.efi ] && echo "Using efi_img_bootia32.efi from git." && cp efi_img_bootia32.efi ${PATH_TO}/
+[ ! -f ${PATH_TO}/efi_boot_bootia32.efi ] && echo "Using efi_boot_bootia32.efi from git." && cp efi_boot_bootia32.efi ${PATH_TO}/
+[ ! -d ${PATH_TO}/UCM-master ] && echo "Fetching UCM files." && wget https://github.com/plbossart/UCM/archive/master.zip -O ${PATH_TO}/master.zip && unzip -d ${PATH_TO} ${PATH_TO}/master.zip && rm ${PATH_TO}/master.zip
+
 # add 32-bit bootloader
 mkdir mnt
 sudo mount iso-directory-structure/boot/grub/efi.img mnt

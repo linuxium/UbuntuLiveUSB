@@ -4,11 +4,14 @@
 
 source include-chroot-variables.txt
 
+[ ! -f ${PATH_TO}/sources.list ] && echo "Using sources.list from git." && cp sources.list ${PATH_TO}/
+
 # copy list of desired packages
 sudo cp target-packages.sh iso-chroot/
 
-# add in kernel debs
+# add in kernel debs(remove debug ones)
 sudo bash -c "cp development-chroot/usr/src/*.deb iso-chroot/usr/src/"
+sudo bash -c "rm iso-chroot/usr/src/*-dbg_*.deb"
 
 # add in UCM files for sound
 sudo mkdir -p iso-chroot/usr/share/alsa/ucm
@@ -17,8 +20,8 @@ sudo cp -rf ${PATH_TO}/UCM-master/* iso-chroot/usr/share/alsa/ucm
 # install kernel debs and additional packages
 sudo mv iso-chroot/etc/apt/sources.list iso-chroot/etc/apt/sources.list.orig
 sudo cp ${PATH_TO}/sources.list iso-chroot/etc/apt/
+sudo rm iso-chroot/etc/resolv.conf
 sudo cp /etc/resolv.conf iso-chroot/etc/
-sudo mount --bind /dev/ iso-chroot/dev
 sudo chroot iso-chroot <<+
 mount -t proc none /proc
 mount -t sysfs none /sys
