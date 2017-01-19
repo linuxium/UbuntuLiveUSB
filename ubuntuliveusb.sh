@@ -7,9 +7,6 @@ source include-chroot-variables.txt
 [ ! -f ${PATH_TO}/${CANONICAL_ISO} ] && echo "Using ${CANONICAL_ISO} from Downloads." && cp ~/Downloads/${CANONICAL_ISO} ${PATH_TO}/
 [ ! -f ${PATH_TO}/${LINUXIUM_ISO} ] && echo "Using ${LINUXIUM_ISO} from local directory." && cp ./${LINUXIUM_ISO} ${PATH_TO}/
 
-[ ! -f ${PATH_TO}/${CANONICAL_ISO} ] && echo "ISO file '${PATH_TO}/${CANONICAL_ISO}' not found ... exiting." && exit
-[ ! -f ${PATH_TO}/${LINUXIUM_ISO} ] && echo "ISO file '${PATH_TO}/${LINUXIUM_ISO}' not found ... exiting." && exit
-
 [ $# != 1 ] || [ ${1:0:5} != "/dev/" ] || [[ `echo ${#1}` < 6 ]] && echo "Usage: $0 /dev/<usb device>" && exit
 USB_DEVICE=$1
 VALID_USB=false
@@ -52,11 +49,14 @@ function copy_ISO_to_USB
 	[ -f mnt_squashfs ] && rm -f mnt_squashfs
 	mkdir mnt_squashfs
 	sudo mount ${PATH_TO}/${ISO} mnt_iso 2> /dev/null
-	sudo cp mnt_iso/casper/vmlinuz.efi mnt_usb/boot/${ISO}/vmlinuz.efi
-	sudo cp mnt_iso/casper/initrd.lz mnt_usb/boot/${ISO}/initrd.lz
 	sudo mount mnt_iso/casper/filesystem.squashfs mnt_squashfs
-	sudo cp mnt_squashfs/boot/vmlinuz* mnt_usb/boot/${ISO}/ 2> /dev/null
-	sudo cp mnt_squashfs/boot/initrd.img* mnt_usb/boot/${ISO}/ 2> /dev/null
+	if [ `ls mnt_squashfs/boot/vmlinuz* 2> /dev/null | wc -l` -gt 0 ] ; then 
+		sudo cp mnt_squashfs/boot/vmlinuz* mnt_usb/boot/${ISO}/ 2> /dev/null
+		sudo cp mnt_squashfs/boot/initrd.img* mnt_usb/boot/${ISO}/ 2> /dev/null
+	else
+		sudo cp mnt_iso/casper/vmlinuz.efi mnt_usb/boot/${ISO}/vmlinuz.efi
+		sudo cp mnt_iso/casper/initrd.lz mnt_usb/boot/${ISO}/initrd.lz
+	fi
 	sudo umount mnt_squashfs && rmdir mnt_squashfs
 	sudo umount mnt_iso && rmdir mnt_iso
 	echo
@@ -88,10 +88,10 @@ do
 	if [ "${ISO}" = "grub" ]; then continue; fi
 	ISO_NAME=${ISO%.iso}
 	echo "Adding GRUB entries for ISO ${ISO_NAME} to USB ..."
-	for KERNEL_PATH in `ls -s --block-size=1 ${ISO_PATH}/vmlinuz* | sort -u | awk '{print $2}'`
+	for KERNEL_PATH in ${ISO_PATH}/vmlinuz*
 	do
 		KERNEL=${KERNEL_PATH#$ISO_PATH/}
-		echo "Adding entry ${KERNEL}..."
+		echo "Adding entry ${KERNEL} ..."
 		sudo bash -c "echo -n 'menuentry \"Try kernel ' >> mnt_usb/boot/grub/grub.cfg"
 		sudo bash -c "echo -n ${KERNEL} >> mnt_usb/boot/grub/grub.cfg"
 		sudo bash -c "echo -n ' from ' >> mnt_usb/boot/grub/grub.cfg"
