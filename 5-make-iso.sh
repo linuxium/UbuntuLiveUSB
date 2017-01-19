@@ -2,11 +2,7 @@
 
 # Linuxium's scripts to create a custom Ubuntu ISO
 
-source include-chroot-variables.txt
-
-[ ! -f ${PATH_TO}/efi_img_bootia32.efi ] && echo "Using efi_img_bootia32.efi from git." && cp efi_img_bootia32.efi ${PATH_TO}/
-[ ! -f ${PATH_TO}/efi_boot_bootia32.efi ] && echo "Using efi_boot_bootia32.efi from git." && cp efi_boot_bootia32.efi ${PATH_TO}/
-[ ! -d ${PATH_TO}/UCM-master ] && echo "Fetching UCM files." && wget https://github.com/plbossart/UCM/archive/master.zip -O ${PATH_TO}/master.zip && unzip -d ${PATH_TO} ${PATH_TO}/master.zip && rm ${PATH_TO}/master.zip
+source chroot-variables.txt
 
 # add 32-bit bootloader
 mkdir mnt
@@ -39,7 +35,7 @@ sudo rm md5sum.txt
 find -type f -print0 | sudo xargs -0 md5sum | grep -v isolinux/boot.cat | sudo tee md5sum.txt > /dev/null
 cd ..
 
-# create the iso
+# create the ISO
 sudo rm -f ${LINUXIUM_ISO}
 rm -f isohdpfx.bin
 dd if=${PATH_TO}/${CANONICAL_ISO} bs=512 count=1 of=isohdpfx.bin

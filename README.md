@@ -18,7 +18,7 @@ The first script '**ubuntuiso.sh**' downloads the latest experimental kernel wit
 - `./4-update-iso.sh` - installs the custom kernel packages into the ISO chroot environment together with any additional packages which may be required  
 - `./5-make-iso.sh` - creates the custom ISO from the ISO chroot environment  
 
-and uses the file `include-chroot-variables.txt` which contains common variables required by all the scripts. The script is run by entering:
+and uses the file `chroot-variables.txt` which contains common variables required by all the scripts. The script is run by entering:
 
 ```
 ./ubuntuiso.sh
@@ -44,9 +44,18 @@ The second script '**ubuntuliveusb.sh**' creates a bootable USB that can be used
 
 and uses the file `usb_partition/boot/grub/grub.cfg` to define the multiboot menu. ISOs can be added or removed by editing the script and menu configuration file. Installation of an ISO is currently only supported when the installation is performed while running the ISO and when the ISO was booted with a 64-bit bootloader. The script includes a five second grace period allowing it to be interrupted as care should be taken to ensure the correct USB device is passed as the parameter in order to prevent accidental data corruption of any other USB device currently being used.
 
-Additional configurations:
-New kernels can be added with providing a <newconfig>-kernel.sh file which contains instructions to retrieve code and compile kernel
-Additional userspace packages can be added to the target by editing the target-packages.sh files
+Additional configurations:  
+New kernels can be added through providing a 'kernel_sources/<newconfig>_kernel.source' file which contains the commands to retrieve the source code and to then compile it.
+Additional userspace packages can be added to the ISO by modifying the 'iso_packages.source' file.
+
+Manual invocation:  
+The scripts can be run individually. An additional initialization script is provided which should be run first: 
+
+```
+./0-initialize.sh
+```
+
+to populate the files used by the scripts as defined in the 'chroot-variables.txt' file.
 
 The scripts are provided as is in the hope that they are useful using the same Creative Commons license as the original Ubuntu wiki. The user is alerted to the fact that using experimental audio drivers and firmware may result in hardware damage for which there is no warranty or liability.
 

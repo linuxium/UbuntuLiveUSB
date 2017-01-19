@@ -11,27 +11,26 @@ dbus-uuidgen > /var/lib/dbus/machine-id
 dpkg-divert --local --rename --add /sbin/initctl
 ln -s /bin/true /sbin/initctl
 
-source /include-chroot-variables.txt
+source /usr/src/chroot-variables.txt
+
+CHROOT_KERNEL=`dpkg -l | awk '/^ii +linux-image-[0-9]/ {print $2}'`
+CHROOT_KERNEL_VERSION=${CHROOT_KERNEL#linux-image-}
 
 apt-get update
 
 # download chroot kernel
-CHROOT_KERNEL=`dpkg -l | awk '/^ii +linux-image-[0-9]/ {print $2}'`
-CHROOT_KERNEL_VERSION=${CHROOT_KERNEL#linux-image-}
 cd /usr/src
 apt-get download ${CHROOT_KERNEL}
 
 # get all dependencies
 apt-get build-dep -y ${CHROOT_KERNEL}
 apt-get -y install git build-essential fakeroot libncurses5-dev libssl-dev ccache
+apt-get -y install p7zip-full
+DEBIAN_FRONTEND=noninteractive apt-get -y install kernel-package
 
-# add support for aufs
-cd usr/src
-git clone git://github.com/sfjro/aufs4-standalone.git aufs4-standalone.git
-cd aufs4-standalone.git/
-git checkout origin/aufs4.9
-
-# compile desired kernels
-for f in /*-kernel.sh; do
-    source $f;
+# compile required kernels
+for KERNEL in ${LINUXIUM_KERNELS}
+do
+	echo Compiling kernel ${KERNEL} ...
+	source /usr/src/${KERNEL}_kernel.source
 done

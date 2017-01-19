@@ -1,0 +1,11 @@
+--- mm/memory.c.orig	2017-01-14 06:27:53.189705553 +0000
++++ mm/memory.c	2017-01-14 06:46:15.001738649 +0000
+@@ -2091,7 +2091,7 @@
+ 	}
+ 
+ 	if (!page_mkwrite)
+-		file_update_time(vma->vm_file);
++		vma_file_update_time(vma);
+ }
+ 
+ /*

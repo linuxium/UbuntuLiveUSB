@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# Linuxium's scripts to create a custom Ubuntu ISO
+
+source /usr/src/chroot-variables.txt
+
+CHROOT_KERNEL=`dpkg -l | awk '/^ii +linux-image-[0-9]/ {print $2}'`
+CHROOT_KERNEL_VERSION=${CHROOT_KERNEL#linux-image-}
+
+# get kernel source
+cd /usr/src
+if [ ! -d /usr/src/asoc-sound ]; then
+	git clone git://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git -b for-next
+	mv /usr/src/sound /usr/src/asoc-sound
+	if [ ! -f /usr/src/asoc-sound/REPORTING-BUGS ]; then
+		cp /usr/src/REPORTING-BUGS /usr/src/asoc-sound
+	fi
+fi
+cd /usr/src/asoc-sound
+KERNEL_VERSION=`make kernelversion`
+
+# patch with aufs - needs updating when 4.10 aufs patch gets issued
+cp -a ../aufs4-standalone.git/{Documentation,fs} .
+cp ../aufs4-standalone.git/include/uapi/linux/aufs_type.h include/uapi/linux/
+patch -p1 < ../aufs4-standalone.git/aufs4-kbuild.patch
+patch -p1 < ../aufs4-standalone.git/aufs4-base.patch
+patch -p1 < ../aufs4-standalone.git/aufs4-mmap.patch
+patch -p1 < ../aufs4-standalone.git/aufs4-standalone.patch
+if [ "${KERNEL_VERSION:0:3}" != "4.9" ]; then
+	patch -p0 < ../aufs4-v4.10-fix1.patch
+	patch -p0 < ../aufs4-v4.10-fix2.patch
+fi
+
+# create config
+scripts/kconfig/merge_config.sh /boot/config-${CHROOT_KERNEL_VERSION} /usr/src/defconfig
+
+# build debs
+LOCALVERSION= fakeroot make-kpkg --jobs `getconf _NPROCESSORS_ONLN` --initrd kernel_image kernel_headers --append_to_version=-asoc-sound --revision=${KERNEL_VERSION//\-/\~}~asoc~sound
+

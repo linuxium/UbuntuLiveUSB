@@ -2,10 +2,7 @@
 
 # Linuxium's scripts to create a multiboot Ubuntu LiveUSB
 
-source include-chroot-variables.txt
-
-[ ! -f ${PATH_TO}/${CANONICAL_ISO} ] && echo "Using ${CANONICAL_ISO} from Downloads." && cp ~/Downloads/${CANONICAL_ISO} ${PATH_TO}/
-[ ! -f ${PATH_TO}/${LINUXIUM_ISO} ] && echo "Using ${LINUXIUM_ISO} from local directory." && cp ./${LINUXIUM_ISO} ${PATH_TO}/
+source chroot-variables.txt
 
 [ $# != 1 ] || [ ${1:0:5} != "/dev/" ] || [[ `echo ${#1}` < 6 ]] && echo "Usage: $0 /dev/<usb device>" && exit
 USB_DEVICE=$1
@@ -24,6 +21,9 @@ fi
 echo "Creating a multiboot Ubuntu liveUSB on '${USB_DEVICE}' ..."
 sleep 5
 
+[ ! -f ${PATH_TO}/${CANONICAL_ISO} ] && echo "Using ${CANONICAL_ISO} from Downloads." && cp ~/Downloads/${CANONICAL_ISO} ${PATH_TO}/
+[ ! -f ${PATH_TO}/${LINUXIUM_ISO} ] && echo "Using ${LINUXIUM_ISO} from local directory." && cp ./${LINUXIUM_ISO} ${PATH_TO}/
+
 # wiping USB
 sudo umount ${USB_DEVICE}* 2> /dev/null
 sudo sgdisk -Z ${USB_DEVICE} > /dev/null 2>&1
@@ -36,7 +36,7 @@ sudo mkfs.vfat -F 32 -n ULIVEUSB ${USB_DEVICE}1 > /dev/null
 [ -f mnt_usb ] && rm -f mnt_usb
 [ -d mnt_usb ] || mkdir mnt_usb
 sudo mount ${USB_DEVICE}1 mnt_usb
-sudo cp -rf usb_partition/* mnt_usb/
+sudo cp -rf include/usb_partition/* mnt_usb/
 
 function copy_ISO_to_USB
 {
@@ -91,7 +91,7 @@ do
 	for KERNEL_PATH in ${ISO_PATH}/vmlinuz*
 	do
 		KERNEL=${KERNEL_PATH#$ISO_PATH/}
-		echo "Adding entry ${KERNEL} ..."
+		echo "Adding entry for ${KERNEL} ..."
 		sudo bash -c "echo -n 'menuentry \"Try kernel ' >> mnt_usb/boot/grub/grub.cfg"
 		sudo bash -c "echo -n ${KERNEL} >> mnt_usb/boot/grub/grub.cfg"
 		sudo bash -c "echo -n ' from ' >> mnt_usb/boot/grub/grub.cfg"

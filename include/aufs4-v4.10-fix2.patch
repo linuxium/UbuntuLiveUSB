@@ -1,0 +1,10 @@
+--- fs/aufs/i_op.c.orig	2017-01-14 09:37:41.234047624 +0000
++++ fs/aufs/i_op.c	2017-01-14 09:37:56.178048073 +0000
+@@ -1392,7 +1392,6 @@
+ 		.listxattr	= aufs_listxattr,
+ #endif
+ 
+-		.readlink	= generic_readlink,
+ 		.get_link	= aufs_get_link,
+ 
+ 		/* .update_time	= aufs_update_time */

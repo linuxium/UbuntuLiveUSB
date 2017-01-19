@@ -2,7 +2,7 @@
 
 # Linuxium's scripts to create a custom Ubuntu ISO
 
-source include-chroot-variables.txt
+source chroot-variables.txt
 
 # mount Ubuntu ISO
 [ -f mnt ] && rm -f mnt

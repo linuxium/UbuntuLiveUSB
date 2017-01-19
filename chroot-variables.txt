@@ -1,0 +1,19 @@
+# Linuxium's scripts to create a custom Ubuntu ISO or multiboot Ubuntu LiveUSB
+
+PATH_TO="/tmp"
+CANONICAL_ISO="ubuntu-16.10-desktop-amd64.iso"
+
+MAINLINE_KERNEL_VERSION=$(cat ${PATH_TO}/finger_banner | grep -m 1 "mainline" ${PATH_TO}/finger_banner | sed 's/.*:[ ]*//')
+STABLE_KERNEL_VERSION=$(cat ${PATH_TO}/finger_banner | grep -m 1 "stable" ${PATH_TO}/finger_banner | sed 's/.*:[ ]*//')
+
+LINUXIUM_KERNELS="mainline stable drm-intel-nightly asoc-for-next alsa-for-next intel-audio-fixes experimental-codecs"
+
+if [ `wc -w <<< "${LINUXIUM_KERNELS}"` -gt 1 ]; then
+	LINUXIUM_KERNEL_VERSION="linuxium"
+else
+	LINUXIUM_KERNEL_VERSION="${LINUXIUM_KERNELS}"
+fi
+
+LINUXIUM_ISO="$(echo ${CANONICAL_ISO} | sed 's/-desktop.*//')-${LINUXIUM_KERNEL_VERSION}.iso"
+LINUXIUM_VOLID="Ubuntu 16.10 ${LINUXIUM_KERNEL_VERSION^}"
+

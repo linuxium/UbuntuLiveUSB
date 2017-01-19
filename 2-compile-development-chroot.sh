@@ -8,10 +8,13 @@ CHROOT_ENVIRONMENT="development-chroot"
 # enter chroot
 sudo mount --bind /dev/ ${CHROOT_ENVIRONMENT}/dev
 sudo chroot ${CHROOT_ENVIRONMENT} <<+
-source /2a-start-compile-linux.source
-source /2b-finish-compile-linux.source
+source /usr/src/2a-start-compile-linux.source
+source /usr/src/2b-finish-compile-linux.source
 +
 
 # exit chroot
 sudo umount ${CHROOT_ENVIRONMENT}/dev
+
+# save binary debs
+cp ${CHROOT_ENVIRONMENT}/usr/src/*.deb deb_binaries/
 
