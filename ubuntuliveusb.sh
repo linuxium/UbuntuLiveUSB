@@ -49,14 +49,11 @@ function copy_ISO_to_USB
 	[ -f mnt_squashfs ] && rm -f mnt_squashfs
 	mkdir mnt_squashfs
 	sudo mount ${PATH_TO}/${ISO} mnt_iso 2> /dev/null
+	sudo cp mnt_iso/casper/vmlinuz.efi mnt_usb/boot/${ISO}/vmlinuz.efi
+	sudo cp mnt_iso/casper/initrd.lz mnt_usb/boot/${ISO}/initrd.lz
 	sudo mount mnt_iso/casper/filesystem.squashfs mnt_squashfs
-	if [ `ls mnt_squashfs/boot/vmlinuz* 2> /dev/null | wc -l` -gt 0 ] ; then 
-		sudo cp mnt_squashfs/boot/vmlinuz* mnt_usb/boot/${ISO}/ 2> /dev/null
-		sudo cp mnt_squashfs/boot/initrd.img* mnt_usb/boot/${ISO}/ 2> /dev/null
-	else
-		sudo cp mnt_iso/casper/vmlinuz.efi mnt_usb/boot/${ISO}/vmlinuz.efi
-		sudo cp mnt_iso/casper/initrd.lz mnt_usb/boot/${ISO}/initrd.lz
-	fi
+	sudo cp mnt_squashfs/boot/vmlinuz* mnt_usb/boot/${ISO}/ 2> /dev/null
+	sudo cp mnt_squashfs/boot/initrd.img* mnt_usb/boot/${ISO}/ 2> /dev/null
 	sudo umount mnt_squashfs && rmdir mnt_squashfs
 	sudo umount mnt_iso && rmdir mnt_iso
 	echo
@@ -88,7 +85,7 @@ do
 	if [ "${ISO}" = "grub" ]; then continue; fi
 	ISO_NAME=${ISO%.iso}
 	echo "Adding GRUB entries for ISO ${ISO_NAME} to USB ..."
-	for KERNEL_PATH in ${ISO_PATH}/vmlinuz*
+	for KERNEL_PATH in `ls -s --block-size=1 ${ISO_PATH}/vmlinuz* | sort -u -k1,1 | awk '{print $2}'`
 	do
 		KERNEL=${KERNEL_PATH#$ISO_PATH/}
 		sudo bash -c "echo -n 'menuentry \"Try kernel ' >> mnt_usb/boot/grub/grub.cfg"
