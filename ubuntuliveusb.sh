@@ -52,7 +52,23 @@ function copy_ISO_to_USB
 	sudo mount mnt_iso/casper/filesystem.squashfs mnt_squashfs
 	if [ `ls mnt_squashfs/boot/vmlinuz* 2> /dev/null | wc -l` -gt 0 ] ; then 
 		sudo cp mnt_squashfs/boot/vmlinuz* mnt_usb/boot/${ISO}/ 2> /dev/null
-		sudo cp mnt_squashfs/boot/initrd.img* mnt_usb/boot/${ISO}/ 2> /dev/null
+		for INITRAM in mnt_squashfs/boot/initrd.img*
+		do
+			INITRAMFS=`basename ${INITRAM}`
+			# unpack initramfs
+			[ -d initrd ] && rm -rf initrd
+			mkdir initrd
+			cd initrd
+			sudo dd status=none if=../${INITRAM} | gzip -d | sudo cpio -id 2> /dev/null
+			# add in UCM files for sound in initramfs
+			sudo mkdir -p usr/share/alsa/ucm
+			sudo cp -rf ${PATH_TO}/UCM-master/* usr/share/alsa/ucm
+			# repack initramfs
+			sudo rm -f mnt_usb/boot/${ISO}/${INITRAMFS}
+			sudo find | sudo cpio -o -H newc 2> /dev/null | gzip | sudo tee ../mnt_usb/boot/${ISO}/${INITRAMFS} > /dev/null
+			cd ..
+			sudo rm -rf initrd
+		done
 	else
 		sudo cp mnt_iso/casper/vmlinuz.efi mnt_usb/boot/${ISO}/vmlinuz.efi
 		sudo cp mnt_iso/casper/initrd.lz mnt_usb/boot/${ISO}/initrd.lz
