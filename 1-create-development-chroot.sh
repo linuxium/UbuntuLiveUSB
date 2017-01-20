@@ -36,82 +36,16 @@ sudo cp include/REPORTING-BUGS development-chroot/usr/src
 
 # add support for aufs
 rm -rf kernel_sources/aufs4-standalone.git
-# DEBUG: BEGIN copy previously downloaded aufs support to reduce internet data usage during testing
-if [ ! -d kernel_sources/aufs4-standalone.git ]; then
-# DEBUG: END copy previously downloaded aufs support to reduce internet data usage during testing
 cd kernel_sources
 git clone git://github.com/sfjro/aufs4-standalone.git aufs4-standalone.git
 cd aufs4-standalone.git
 git checkout origin/aufs4.9
 cd ../..
-# DEBUG: BEGIN copy previously downloaded aufs support to reduce internet data usage during testing
-fi
-# DEBUG: END copy previously downloaded aufs support to reduce internet data usage during testing
 sudo cp -a kernel_sources/aufs4-standalone.git development-chroot/usr/src
 
 # copy kernel definitions to development chroot
 for KERNEL in ${LINUXIUM_KERNELS}
 do
 	sudo cp kernel_sources/${KERNEL}_kernel.source development-chroot/usr/src
-	# DEBUG: BEGIN copy previously downloaded kernel sources to reduce internet data usage during testing
-	case "${KERNEL}" in
-		"mainline")
-			if [ -d kernel_sources/linux-${MAINLINE_KERNEL_VERSION} ]; then
-				sudo cp -a kernel_sources/linux-${MAINLINE_KERNEL_VERSION} development-chroot/usr/src
-				if [ ! -f development-chroot/usr/src/linux-${MAINLINE_KERNEL_VERSION}/REPORTING-BUGS ]; then
-					sudo cp include/REPORTING-BUGS development-chroot/usr/src/linux-${MAINLINE_KERNEL_VERSION}
-				fi
-			fi
-			;;
-		"stable")
-			if [ -d kernel_sources/linux-${STABLE_KERNEL_VERSION} ]; then
-				sudo cp -a kernel_sources/linux-${STABLE_KERNEL_VERSION} development-chroot/usr/src
-				if [ ! -f development-chroot/usr/src/linux-${STABLE_KERNEL_VERSION}/REPORTING-BUGS ]; then
-					sudo cp include/REPORTING-BUGS development-chroot/usr/src/linux-${STABLE_KERNEL_VERSION}
-				fi
-			fi
-			;;
-		"drm-intel-nightly")
-			if [ -d kernel_sources/drm-intel ]; then
-				sudo cp -a kernel_sources/drm-intel development-chroot/usr/src
-				if [ ! -f development-chroot/usr/src/drm-intel/REPORTING-BUGS ]; then
-					sudo cp include/REPORTING-BUGS development-chroot/usr/src/drm-intel
-				fi
-			fi
-			;;
-		"asoc-for-next")
-			if [ -d kernel_sources/asoc-sound ]; then
-				sudo cp -a kernel_sources/asoc-sound development-chroot/usr/src
-				if [ ! -f development-chroot/usr/src/asoc-sound/REPORTING-BUGS ]; then
-					sudo cp include/REPORTING-BUGS development-chroot/usr/src/asoc-sound
-				fi
-			fi
-			;;
-		"alsa-for-next")
-			if [ -d kernel_sources/alsa-sound ]; then
-				sudo cp -a kernel_sources/alsa-sound development-chroot/usr/src
-				if [ ! -f development-chroot/usr/src/alsa-sound/REPORTING-BUGS ]; then
-					sudo cp include/REPORTING-BUGS development-chroot/usr/src/alsa-sound
-				fi
-			fi
-			;;
-		"intel-audio-fixes")
-			if [ -d kernel_sources/sound-topic-v4.9-fixes ]; then
-				sudo cp -a kernel_sources/sound-topic-v4.9-fixes development-chroot/usr/src
-				if [ ! -f development-chroot/usr/src/sound-topic-v4.9-fixes/REPORTING-BUGS ]; then
-					sudo cp include/REPORTING-BUGS development-chroot/usr/src/sound-topic-v4.9-fixes
-				fi
-			fi
-			;;
-		"experimental-codecs")
-			if [ -d kernel_sources/sound-experimental-codecs ]; then
-				sudo cp -a kernel_sources/sound-experimental-codecs development-chroot/usr/src
-				if [ ! -f development-chroot/usr/src/sound-experimental-codecs/REPORTING-BUGS ]; then
-					sudo cp include/REPORTING-BUGS development-chroot/usr/src/sound-experimental-codecs
-				fi
-			fi
-			;;
-	esac
-	# DEBUG: END copy previously downloaded kernel sources to reduce internet data usage during testing
 done
 
